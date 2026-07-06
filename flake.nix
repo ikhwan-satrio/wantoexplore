@@ -18,13 +18,13 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        version = "1.1.0";
+        version = "1.0.0";
 
-        debUrl = "https://github.com/ikhwan-satrio/gibterm/releases/download/v${version}/gibterm_${version}_amd64.deb";
+        debUrl = "https://github.com/ikhwan-satrio/wantoexplore/releases/download/v${version}/wantoexplore_${version}_amd64.deb";
 
         deb = pkgs.fetchurl {
           url = debUrl;
-          hash = "sha256:88470b3a02064cafa89c0d7fc54f77ffbd8e1c50c3b8322a14f6f1c58994feda";
+          hash = "sha256:2b9677ddaa96aaee6d51bb7cdbb7c0c3f275874591f8c160277a5c12f86faf7d";
         };
 
         runtimeDeps = with pkgs; [
@@ -53,7 +53,7 @@
         };
 
         packages.default = pkgs.stdenv.mkDerivation {
-          pname = "gibterm";
+          pname = "wantoexplore";
           inherit version;
 
           src = deb;
@@ -79,16 +79,16 @@
             dpkg -x $src unpacked
 
             mkdir -p $out/bin
-            if [ -f unpacked/usr/bin/gibterm ]; then
-              cp unpacked/usr/bin/gibterm $out/bin/gibterm
+            if [ -f unpacked/usr/bin/wantoexplore ]; then
+              cp unpacked/usr/bin/wantoexplore $out/bin/wantoexplore
             else
-              cp unpacked/usr/bin/app $out/bin/gibterm
+              cp unpacked/usr/bin/app $out/bin/wantoexplore
             fi
 
             mkdir -p $out/share
             cp -r unpacked/usr/share/* $out/share/
 
-            chmod +x $out/bin/gibterm
+            chmod +x $out/bin/wantoexplore
 
             runHook postInstall
           '';
@@ -103,10 +103,10 @@
 
           meta = with pkgs.lib; {
             description = "Terminal emulator";
-            homepage = "https://github.com/ikhwan-satrio/gibterm";
+            homepage = "https://github.com/ikhwan-satrio/wantoexplore";
             license = licenses.mit;
             platforms = [ "x86_64-linux" ];
-            mainProgram = "gibterm";
+            mainProgram = "wantoexplore";
           };
         };
       }
