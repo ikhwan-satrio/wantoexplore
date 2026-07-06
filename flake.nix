@@ -20,7 +20,7 @@
 
         version = "1.0.0";
 
-        debUrl = "https://github.com/ikhwan-satrio/wantoexplore/releases/download/v${version}/wantoexplore_${version}_amd64.deb";
+        debUrl = "https://github.com/ikhwan-satrio/wantoexplore/releases/download/${version}/wantoexplore_${version}_amd64.deb";
 
         deb = pkgs.fetchurl {
           url = debUrl;
