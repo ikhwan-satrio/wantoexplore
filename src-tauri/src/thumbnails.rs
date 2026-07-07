@@ -96,15 +96,6 @@ impl ThumbnailCache {
         self.write_cache(&hash, mtime, &jpeg_bytes);
         Ok(thumb_path)
     }
-        
-    #[allow(unused)]
-    pub fn clear(&self) {
-        if let Ok(entries) = fs::read_dir(&self.cache_dir) {
-            for entry in entries.flatten() {
-                let _ = fs::remove_file(entry.path());
-            }
-        }
-    }
 }
 
 fn generate_image_thumbnail(path: &str) -> Result<Vec<u8>, String> {

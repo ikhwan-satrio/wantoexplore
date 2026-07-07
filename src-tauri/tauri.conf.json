@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "wantoexplore",
-  "version": "1.0.0",
-  "identifier": "com.ikhwan-satrio.wantoexplore",
+  "productName": "teddypicker",
+  "version": "1.1.0",
+  "identifier": "com.ikhwan-satrio.teddypicker",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5173",
@@ -14,7 +14,7 @@
       {
         "decorations": false,
         "titleBarStyle": "Overlay",
-        "title": "wantoexplore",
+        "title": "teddypicker",
         "width": 800,
         "height": 600,
         "resizable": true,

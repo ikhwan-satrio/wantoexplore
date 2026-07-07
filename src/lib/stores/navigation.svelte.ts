@@ -135,11 +135,6 @@ class NavigationStore {
     await this.navigateTo('/' + parts.join('/') || '/');
   }
 
-  async goToParent() {
-    const parent = this.currentPath.split('/').slice(0, -1).join('/') || '/';
-    await this.navigateTo(parent);
-  }
-
   async refresh() {
     if (this.currentView === 'trash') {
       await this.refreshTrash();

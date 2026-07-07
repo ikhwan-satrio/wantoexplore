@@ -7,7 +7,7 @@ mod thumbnails;
 use capabilities::CapabilityChecker;
 use extension_manager::{ExtensionManager, ExtensionType};
 use navigation::{get_pinned_dirs, get_xdg_dirs, PinnedDir, XdgDirs};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use tauri::{Manager, State};
@@ -21,7 +21,7 @@ pub struct DirEntryInfo {
     extension: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 pub struct ExtensionInfo {
     id: String,
     name: String,
@@ -557,7 +557,7 @@ pub fn run() {
 
             let extension_manager = ExtensionManager::new(app.handle());
             let cache_dir = app.path().cache_dir().unwrap_or_else(|_| {
-                std::env::temp_dir().join("wantoexplore-cache")
+                std::env::temp_dir().join("teddypicker-cache")
             });
             let app_state = AppState {
                 extension_manager: Mutex::new(extension_manager),

@@ -4,7 +4,7 @@ Guidance for AI coding agents (Claude Code, etc.) working in this repo. Read thi
 
 ## Project overview
 
-**wantoexplore** — a cross-platform desktop file manager (Windows/Linux/macOS) built with:
+**teddypicker** — a cross-platform desktop file manager (Windows/Linux/macOS) built with:
 - **Backend**: Rust + Tauri v2
 - **Frontend**: Svelte + TypeScript
 - **Package manager**: Bun (not npm/yarn/pnpm)
@@ -15,7 +15,7 @@ Guidance for AI coding agents (Claude Code, etc.) working in this repo. Read thi
 ## Folder structure
 
 ```
-wantoexplore/
+teddypicker/
 ├── src-tauri/
 │   ├── src/
 │   │   ├── main.rs

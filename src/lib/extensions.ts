@@ -1,4 +1,4 @@
-export function buildBridgeScript(
+function buildBridgeScript(
   pluginId: string,
   pluginCode: string,
   allowedActions: string[],

@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'wantoexplore-settings';
+const STORAGE_KEY = 'teddypicker-settings';
 
 interface SettingsData {
   thumbnailEnabled: boolean;

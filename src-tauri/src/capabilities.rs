@@ -1,6 +1,3 @@
-#[allow(dead_code)]
-#[allow(unused)]
-
 use crate::extension_manager::{ExtensionManager, ExtensionType};
 use std::path::{Path, PathBuf};
 
@@ -72,7 +69,7 @@ impl<'a> CapabilityChecker<'a> {
         // Check scope-based permissions
         match permission {
             "fs:read" | "fs:write" | "fs:*" => {
-                self.check_fs_permission(target_path, permission == "fs:write" || permission == "fs:*")
+                self.check_fs_permission(target_path)
             }
             _ => PermissionCheck {
                 allowed: true,
@@ -81,7 +78,7 @@ impl<'a> CapabilityChecker<'a> {
         }
     }
 
-    fn check_fs_permission(&self, target_path: Option<&Path>, _write_access: bool) -> PermissionCheck {
+    fn check_fs_permission(&self, target_path: Option<&Path>) -> PermissionCheck {
         let target = match target_path {
             Some(p) => p,
             None => {
@@ -126,51 +123,5 @@ impl<'a> CapabilityChecker<'a> {
 
     pub fn can_list_directory(&self, plugin_id: &str, path: &Path) -> PermissionCheck {
         self.check_permission(plugin_id, "fs:read", Some(path))
-    }
-
-    pub fn can_create_file(&self, plugin_id: &str, path: &Path) -> PermissionCheck {
-        self.check_permission(plugin_id, "fs:write", Some(path))
-    }
-
-    pub fn can_delete_file(&self, plugin_id: &str, path: &Path) -> PermissionCheck {
-        self.check_permission(plugin_id, "fs:write", Some(path))
-    }
-
-    pub fn can_move_file(&self, plugin_id: &str, source: &Path, destination: &Path) -> PermissionCheck {
-        let source_check = self.check_permission(plugin_id, "fs:write", Some(source));
-        if !source_check.allowed {
-            return source_check;
-        }
-
-        self.check_permission(plugin_id, "fs:write", Some(destination))
-    }
-
-    pub fn can_preview_file(&self, plugin_id: &str, path: &Path) -> PermissionCheck {
-        self.check_permission(plugin_id, "fs:read", Some(path))
-    }
-
-    pub fn can_execute_context_action(&self, plugin_id: &str, _command: &str) -> PermissionCheck {
-        // Context menu actions require the plugin to be enabled
-        let ext = match self.extension_manager.get_extension_by_id(plugin_id) {
-            Some(ext) => ext,
-            None => {
-                return PermissionCheck {
-                    allowed: false,
-                    reason: format!("Plugin '{}' not found", plugin_id),
-                }
-            }
-        };
-
-        if !ext.enabled {
-            return PermissionCheck {
-                allowed: false,
-                reason: "Plugin is disabled".to_string(),
-            };
-        }
-
-        PermissionCheck {
-            allowed: true,
-            reason: "Context action allowed".to_string(),
-        }
     }
 }

@@ -1,5 +1,5 @@
 {
-  description = "Wantoexplore — Tauri v2 file manager";
+  description = "TeddyPicker — Tauri v2 file manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -18,9 +18,9 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        version = "1.0.0";
+        version = "1.1.0";
 
-        debUrl = "https://github.com/ikhwan-satrio/wantoexplore/releases/download/v${version}/wantoexplore_${version}_amd64.deb";
+        debUrl = "https://github.com/ikhwan-satrio/teddypicker/releases/download/v${version}/teddypicker_${version}_amd64.deb";
 
         deb = pkgs.fetchurl {
           url = debUrl;
@@ -53,7 +53,7 @@
         };
 
         packages.default = pkgs.stdenv.mkDerivation {
-          pname = "wantoexplore";
+          pname = "teddypicker";
           inherit version;
 
           src = deb;
@@ -79,16 +79,16 @@
             dpkg -x $src unpacked
 
             mkdir -p $out/bin
-            if [ -f unpacked/usr/bin/wantoexplore ]; then
-              cp unpacked/usr/bin/wantoexplore $out/bin/wantoexplore
+            if [ -f unpacked/usr/bin/teddypicker ]; then
+              cp unpacked/usr/bin/teddypicker $out/bin/teddypicker
             else
-              cp unpacked/usr/bin/app $out/bin/wantoexplore
+              cp unpacked/usr/bin/app $out/bin/teddypicker
             fi
 
             mkdir -p $out/share
             cp -r unpacked/usr/share/* $out/share/
 
-            chmod +x $out/bin/wantoexplore
+            chmod +x $out/bin/teddypicker
 
             runHook postInstall
           '';
@@ -103,10 +103,10 @@
 
           meta = with pkgs.lib; {
             description = "Terminal emulator";
-            homepage = "https://github.com/ikhwan-satrio/wantoexplore";
+            homepage = "https://github.com/ikhwan-satrio/teddypicker";
             license = licenses.mit;
             platforms = [ "x86_64-linux" ];
-            mainProgram = "wantoexplore";
+            mainProgram = "teddypicker";
           };
         };
       }

@@ -1,4 +1,4 @@
-# wantoexplore
+# teddypicker
 
 A fast, cross-platform desktop file manager built with **Tauri v2** and **Svelte**, with a built-in extension system for themes and functional plugins.
 
@@ -45,7 +45,7 @@ bun run tauri build
 ## Project structure
 
 ```
-wantoexplore/
+teddypicker/
 ├── src-tauri/
 │   ├── src/
 │   │   ├── main.rs / lib.rs
@@ -69,7 +69,7 @@ See [`AGENTS.md`](./AGENTS.md) for detailed architecture notes, coding conventio
 
 ## Extensions
 
-wantoexplore supports two kinds of extensions, dropped into the `extensions/` folder (or the app's data directory at runtime):
+teddypicker supports two kinds of extensions, dropped into the `extensions/` folder (or the app's data directory at runtime):
 
 - **Theme** — CSS-only, overrides design tokens (`--surface-0`, `--text-primary`, etc.)
 - **Plugin** — JS-based, runs sandboxed in an iframe, can register file previews and custom context-menu actions
