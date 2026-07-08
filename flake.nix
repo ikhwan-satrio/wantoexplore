@@ -65,7 +65,7 @@
           nativeBuildInputs = with pkgs; [
             dpkg
             autoPatchelfHook
-            wrapGAppsHook4
+            makeWrapper
           ];
 
           buildInputs = runtimeDeps ++ (with pkgs; [
@@ -84,25 +84,24 @@
 
             mkdir -p $out/bin
             if [ -f unpacked/usr/bin/teddypicker ]; then
-              cp unpacked/usr/bin/teddypicker $out/bin/teddypicker
+              cp unpacked/usr/bin/teddypicker $out/bin/.teddypicker-unwrapped
             else
-              cp unpacked/usr/bin/app $out/bin/teddypicker
+              cp unpacked/usr/bin/app $out/bin/.teddypicker-unwrapped
             fi
 
             mkdir -p $out/share
             cp -r unpacked/usr/share/* $out/share/
 
-            chmod +x $out/bin/teddypicker
+            chmod +x $out/bin/.teddypicker-unwrapped
+
+            wrapProgram $out/bin/.teddypicker-unwrapped \
+              --prefix GDK_BACKEND : "wayland:x11" \
+              --prefix XDG_CURRENT_DESKTOP : "GNOME" \
+              --set LD_LIBRARY_PATH "${pkgs.lib.makeLibraryPath runtimeDeps}"
+
+            ln -s $out/bin/.teddypicker-unwrapped $out/bin/teddypicker
 
             runHook postInstall
-          '';
-
-          preFixup = ''
-            gappsWrapperArgs+=(
-              --prefix GDK_BACKEND : "wayland:x11"
-              --prefix XDG_CURRENT_DESKTOP : "GNOME"
-              --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeDeps}"
-            )
           '';
 
           meta = with pkgs.lib; {
