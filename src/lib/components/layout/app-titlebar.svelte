@@ -2,10 +2,13 @@
   import { invoke } from '@tauri-apps/api/core';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import { navigation } from '$lib/stores/navigation.svelte';
+  import { selection } from '$lib/stores/selection.svelte';
+  import { createHotkey } from '@tanstack/svelte-hotkeys';
   import type { DirEntryInfo } from '$lib/types';
   import {
     Minus, Square, Copy, X,
     ChevronLeft, ChevronRight, ChevronUp, RotateCw,
+    CheckSquare,
   } from 'lucide-svelte';
 
   const appWindow = getCurrentWindow();
@@ -117,15 +120,10 @@
     }, 150);
   }
 
-  function onWindowKeydown(e: KeyboardEvent) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
-      e.preventDefault();
-      startEditing();
-    }
-  }
+  createHotkey('Mod+L', () => {
+    startEditing();
+  });
 </script>
-
-<svelte:window onkeydown={onWindowKeydown} />
 
 <div class="flex p-4 shrink-0 select-none items-center border-b border-border bg-background" bind:this={containerEl}>
   <!-- Nav buttons -->
@@ -193,6 +191,18 @@
       </button>
     {/if}
   </div>
+
+  <!-- Selection indicator -->
+  {#if selection.hasSelection}
+    <button
+      class="flex items-center gap-1.5 mr-2 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-medium transition-all hover:bg-primary/20 cursor-pointer border-0"
+      onclick={() => selection.clear()}
+      title="Click to deselect all"
+    >
+      <CheckSquare class="h-3.5 w-3.5" />
+      <span>{selection.count}</span>
+    </button>
+  {/if}
 
   <!-- Window controls -->
   <div class="ml-auto flex h-full">

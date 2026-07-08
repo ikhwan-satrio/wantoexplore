@@ -1,16 +1,18 @@
+mod archive;
 mod capabilities;
 mod extension_manager;
 mod navigation;
 mod open_with;
 mod thumbnails;
 
+use archive::ArchiveProgress;
 use capabilities::CapabilityChecker;
 use extension_manager::{ExtensionManager, ExtensionType};
 use navigation::{get_pinned_dirs, get_xdg_dirs, PinnedDir, XdgDirs};
 use serde::Serialize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
-use tauri::{Manager, State};
+use tauri::{Emitter, Manager, State};
 use tokio::sync::Semaphore;
 
 #[derive(Serialize)]
@@ -124,6 +126,48 @@ fn app_rename_file(old_path: String, new_name: String) -> Result<String, String>
 fn app_delete_file(path: String) -> Result<(), String> {
     let target = PathBuf::from(&path);
     trash::delete(&target).map_err(|e| format!("Failed to move to trash: {}", e))
+}
+
+fn dir_size(path: &Path) -> Result<u64, String> {
+    let mut total = 0u64;
+    if path.is_file() {
+        return std::fs::metadata(path)
+            .map(|m| m.len())
+            .map_err(|e| e.to_string());
+    }
+    for entry in std::fs::read_dir(path).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let meta = entry.metadata().map_err(|e| e.to_string())?;
+        if meta.is_dir() {
+            total += dir_size(&entry.path())?;
+        } else {
+            total += meta.len();
+        }
+    }
+    Ok(total)
+}
+
+#[tauri::command]
+fn app_get_total_size(paths: Vec<String>) -> Result<u64, String> {
+    let mut total = 0u64;
+    for p in &paths {
+        let path = PathBuf::from(p);
+        total += dir_size(&path)?;
+    }
+    Ok(total)
+}
+
+#[tauri::command]
+fn app_permanently_delete(paths: Vec<String>) -> Result<(), String> {
+    for p in &paths {
+        let path = PathBuf::from(p);
+        if path.is_dir() {
+            std::fs::remove_dir_all(&path).map_err(|e| format!("Failed to delete {}: {}", p, e))?;
+        } else {
+            std::fs::remove_file(&path).map_err(|e| format!("Failed to delete {}: {}", p, e))?;
+        }
+    }
+    Ok(())
 }
 
 #[derive(Serialize)]
@@ -541,6 +585,63 @@ fn app_plugin_list_dir(
     Ok(entries)
 }
 
+// ─── Archive commands ────────────────────────────────────────────────
+
+#[tauri::command]
+async fn app_compress_files(
+    app: tauri::AppHandle,
+    sources: Vec<String>,
+    dest: String,
+    format: String,
+) -> Result<Vec<ArchiveProgress>, String> {
+    let dest_path = PathBuf::from(&dest);
+    tokio::task::spawn_blocking(move || {
+        let mut events = Vec::new();
+        let result = archive::compress_files(&sources, &dest_path, &format, &mut |p| {
+            events.push(p.clone());
+            let _ = app.emit("archive-progress", &p);
+        });
+        // Final completion event
+        let _ = app.emit(
+            "archive-done",
+            serde_json::json!({ "kind": "compress", "result": &result }),
+        );
+        result
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+async fn app_extract_archive(
+    app: tauri::AppHandle,
+    archive: String,
+    dest: String,
+) -> Result<Vec<ArchiveProgress>, String> {
+    let archive_path = PathBuf::from(&archive);
+    let dest_path = PathBuf::from(&dest);
+    tokio::task::spawn_blocking(move || {
+        let mut events = Vec::new();
+        let result = archive::extract_archive(&archive_path, &dest_path, &mut |p| {
+            events.push(p.clone());
+            let _ = app.emit("archive-progress", &p);
+        });
+        // Final completion event
+        let _ = app.emit(
+            "archive-done",
+            serde_json::json!({ "kind": "extract", "result": &result }),
+        );
+        result
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+fn app_get_archive_formats() -> Vec<archive::ArchiveFormat> {
+    archive::get_supported_compress_formats()
+}
+
 // ─── App entry ───────────────────────────────────────────────────────
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -581,6 +682,8 @@ pub fn run() {
             app_get_current_dir,
             app_rename_file,
             app_delete_file,
+            app_get_total_size,
+            app_permanently_delete,
             app_list_trash,
             app_restore_trash_item,
             app_purge_trash_item,
@@ -593,6 +696,10 @@ pub fn run() {
             app_copy_files,
             app_move_files,
             app_get_thumbnail,
+            // archive
+            app_compress_files,
+            app_extract_archive,
+            app_get_archive_formats,
             // navigation
             app_get_xdg,
             app_get_pinned,

@@ -4,7 +4,18 @@
   import AppLayout from '$lib/components/layout/app-layout.svelte';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import { navigation } from '$lib/stores/navigation.svelte';
-	import { ModeWatcher } from "mode-watcher";
+  import { Toaster } from '$lib/components/ui/sonner';
+  import { ModeWatcher } from "mode-watcher";
+  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 0,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
 
   let { children } = $props();
 
@@ -13,11 +24,14 @@
   });
 </script>
 
-<AppLayout>
-  {#snippet sidebar()}
-    <Sidebar />
-  {/snippet}
+<QueryClientProvider client={queryClient}>
+  <AppLayout>
+    {#snippet sidebar()}
+      <Sidebar />
+    {/snippet}
 
-  {@render children()}
-</AppLayout>
-<ModeWatcher/>
+    {@render children()}
+  </AppLayout>
+  <ModeWatcher/>
+  <Toaster position="bottom-right" richColors closeButton />
+</QueryClientProvider>

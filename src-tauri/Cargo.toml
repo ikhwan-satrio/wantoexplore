@@ -1,6 +1,6 @@
 [package]
 name = "teddypicker"
-version = "1.1.0"
+version = "1.2.0"
 description = "TeddyPicker - a file manager"
 authors = ["ikhwan-satrio"]
 license = ""
@@ -35,3 +35,9 @@ image = { version = "0.25.6", features = ["jpeg", "png", "gif", "bmp", "webp", "
 sha2 = "0.10.9"
 hex = "0.4.3"
 tokio = { version = "1", features = ["sync"] }
+zip = "2"
+tar = "0.4"
+flate2 = "1"
+bzip2 = "0.5"
+xz2 = "0.1"
+zstd = "0.13"
