@@ -18,13 +18,13 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        version = "1.1.0";
+        version = "1.2.0";
 
         debUrl = "https://github.com/ikhwan-satrio/teddypicker/releases/download/v${version}/teddypicker_${version}_amd64.deb";
 
         deb = pkgs.fetchurl {
           url = debUrl;
-          hash = "sha256:db7b9631934e470ad94c4bf3a28dbd3609296fe91c8e434c40d6fd68d64f8c5f";
+          hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
         };
 
         runtimeDeps = with pkgs; [
@@ -102,7 +102,7 @@
           '';
 
           meta = with pkgs.lib; {
-            description = "Terminal emulator";
+            description = "File manager";
             homepage = "https://github.com/ikhwan-satrio/teddypicker";
             license = licenses.mit;
             platforms = [ "x86_64-linux" ];
