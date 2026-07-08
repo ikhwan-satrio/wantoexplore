@@ -50,6 +50,10 @@
             gsettings-desktop-schemas
             hicolor-icon-theme
           ];
+
+          shellHook = ''
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath runtimeDeps}:$LD_LIBRARY_PATH"
+          '';
         };
 
         packages.default = pkgs.stdenv.mkDerivation {
