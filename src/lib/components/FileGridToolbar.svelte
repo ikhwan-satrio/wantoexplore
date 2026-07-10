@@ -1,9 +1,26 @@
 <script lang="ts">
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, Trash2, RotateCw } from 'lucide-svelte';
 	import { navigation } from '$lib/stores/navigation.svelte';
 	import { selection } from '$lib/stores/selection.svelte';
+	import { useRestoreTrashMutation, useEmptyTrashMutation } from '$lib/queries/mutations';
 
 	let { viewMode = $bindable<'grid' | 'list'>('grid') }: { viewMode: 'grid' | 'list' } = $props();
+
+	const restoreAllMutation = useRestoreTrashMutation();
+	const emptyTrashMutation = useEmptyTrashMutation();
+
+	function handleRestoreAll() {
+		const ids = navigation.trashEntries.map((e) => e.id);
+		if (ids.length > 0) {
+			restoreAllMutation.mutate(ids);
+		}
+	}
+
+	function handleEmptyTrash() {
+		if (navigation.trashEntries.length > 0) {
+			emptyTrashMutation.mutate();
+		}
+	}
 </script>
 
 <div class="flex shrink-0 items-center justify-between border-b border-border px-3 py-1">
@@ -18,6 +35,24 @@
 		{/if}
 	</span>
 	<div class="flex items-center gap-1">
+		{#if navigation.currentView === 'trash' && navigation.trashEntries.length > 0}
+			<button
+				class="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+				onclick={handleRestoreAll}
+				title="Restore all items"
+			>
+				<RotateCw class="h-3.5 w-3.5" />
+				<span>Restore All</span>
+			</button>
+			<button
+				class="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-destructive transition-colors hover:bg-destructive/10"
+				onclick={handleEmptyTrash}
+				title="Delete all items permanently"
+			>
+				<Trash2 class="h-3.5 w-3.5" />
+				<span>Clear All</span>
+			</button>
+		{/if}
 		<button
 			class="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground {viewMode ===
 			'grid'

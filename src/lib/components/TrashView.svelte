@@ -36,7 +36,7 @@
 	>
 		{#each navigation.trashEntries as entry (entry.id)}
 			<button
-				class="flex w-[160px] cursor-pointer flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 text-center shadow-xs transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 {selection.paths.has(
+				class="flex w-[160px] cursor-pointer flex-col items-center gap-2 overflow-hidden rounded-lg border border-border bg-card p-3 text-center shadow-xs transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 {selection.paths.has(
 					entry.id
 				)
 					? 'bg-accent text-accent-foreground border-ring'
@@ -55,7 +55,7 @@
 					{entry.name}
 				</span>
 				<span
-					class="truncate text-[0.6rem] text-muted-foreground/60"
+					class="w-full truncate text-[0.6rem] text-muted-foreground/60"
 					title={entry.original_path}
 				>
 					{entry.original_path}
@@ -86,7 +86,7 @@
 			<div
 				role="button"
 				tabindex="-1"
-				class="flex w-full cursor-pointer items-center gap-3 border-b border-border bg-transparent px-4 py-2 text-left text-sm transition-all hover:bg-accent {selection.paths.has(
+				class="flex w-full cursor-pointer items-center gap-3 overflow-hidden border-b border-border bg-transparent px-4 py-2 text-left text-sm transition-all hover:bg-accent {selection.paths.has(
 					entry.id
 				)
 					? 'bg-accent'
@@ -107,7 +107,7 @@
 				}}
 			>
 				<FolderOpen class="h-5 w-5 shrink-0 text-muted-foreground" />
-				<div class="flex-1 min-w-0">
+				<div class="min-w-0 flex-1">
 					<div class="truncate">{entry.name}</div>
 					<div class="truncate text-[0.65rem] text-muted-foreground/60">
 						{entry.original_path}
