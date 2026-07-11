@@ -31,11 +31,26 @@ pub struct ArchiveFormat {
 
 pub fn get_supported_compress_formats() -> Vec<ArchiveFormat> {
     vec![
-        ArchiveFormat { ext: "zip".into(), label: "ZIP Archive".into() },
-        ArchiveFormat { ext: "tar.gz".into(), label: "Tar Gzip".into() },
-        ArchiveFormat { ext: "tar.bz2".into(), label: "Tar Bzip2".into() },
-        ArchiveFormat { ext: "tar.xz".into(), label: "Tar XZ".into() },
-        ArchiveFormat { ext: "tar.zst".into(), label: "Tar Zstandard".into() },
+        ArchiveFormat {
+            ext: "zip".into(),
+            label: "ZIP Archive".into(),
+        },
+        ArchiveFormat {
+            ext: "tar.gz".into(),
+            label: "Tar Gzip".into(),
+        },
+        ArchiveFormat {
+            ext: "tar.bz2".into(),
+            label: "Tar Bzip2".into(),
+        },
+        ArchiveFormat {
+            ext: "tar.xz".into(),
+            label: "Tar XZ".into(),
+        },
+        ArchiveFormat {
+            ext: "tar.zst".into(),
+            label: "Tar Zstandard".into(),
+        },
     ]
 }
 
@@ -71,8 +86,7 @@ fn add_to_zip<W: Write + std::io::Seek>(
             .unwrap_or(path)
             .to_string_lossy()
             .to_string();
-        zip.start_file(name, options)
-            .map_err(|e| e.to_string())?;
+        zip.start_file(name, options).map_err(|e| e.to_string())?;
         let mut f = File::open(path).map_err(|e| e.to_string())?;
         let mut buf = Vec::new();
         f.read_to_end(&mut buf).map_err(|e| e.to_string())?;
@@ -88,7 +102,8 @@ fn compress_to_zip(
     on_progress: &mut dyn FnMut(ArchiveProgress),
 ) -> Result<Vec<ArchiveProgress>, String> {
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     let file = File::create(dest).map_err(|e| format!("Failed to create archive: {}", e))?;
     let options = SimpleFileOptions::default()
@@ -121,7 +136,8 @@ fn compress_to_zip(
         progress.push(p);
     }
 
-    zip.finish().map_err(|e| format!("Failed to finish archive: {}", e))?;
+    zip.finish()
+        .map_err(|e| format!("Failed to finish archive: {}", e))?;
     Ok(progress)
 }
 
@@ -153,10 +169,7 @@ fn extract_zip(
         let p = ArchiveProgress {
             current: i + 1,
             total,
-            file_name: entry
-                .mangled_name()
-                .to_string_lossy()
-                .to_string(),
+            file_name: entry.mangled_name().to_string_lossy().to_string(),
         };
         on_progress(p.clone());
         progress.push(p);
@@ -209,7 +222,8 @@ fn compress_tar_with_writer(
         progress.push(p);
     }
 
-    tar.finish().map_err(|e| format!("Failed to finish archive: {}", e))?;
+    tar.finish()
+        .map_err(|e| format!("Failed to finish archive: {}", e))?;
     Ok(progress)
 }
 
@@ -221,7 +235,8 @@ fn compress_to_tar_gz(
     on_progress: &mut dyn FnMut(ArchiveProgress),
 ) -> Result<Vec<ArchiveProgress>, String> {
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     let file = File::create(dest).map_err(|e| format!("Failed to create archive: {}", e))?;
     let enc = GzEncoder::new(file, Compression::default());
@@ -246,7 +261,8 @@ fn compress_to_tar_bz2(
     on_progress: &mut dyn FnMut(ArchiveProgress),
 ) -> Result<Vec<ArchiveProgress>, String> {
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     let file = File::create(dest).map_err(|e| format!("Failed to create archive: {}", e))?;
     let enc = BzEncoder::new(file, BzCompression::default());
@@ -271,7 +287,8 @@ fn compress_to_tar_xz(
     on_progress: &mut dyn FnMut(ArchiveProgress),
 ) -> Result<Vec<ArchiveProgress>, String> {
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     let file = File::create(dest).map_err(|e| format!("Failed to create archive: {}", e))?;
     let enc = XzEncoder::new(file, 6);
@@ -296,7 +313,8 @@ fn compress_to_tar_zst(
     on_progress: &mut dyn FnMut(ArchiveProgress),
 ) -> Result<Vec<ArchiveProgress>, String> {
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     let file = File::create(dest).map_err(|e| format!("Failed to create archive: {}", e))?;
     let enc = ZstdEncoder::new(file, 3).map_err(|e| e.to_string())?;
@@ -321,7 +339,8 @@ fn compress_to_tar(
     on_progress: &mut dyn FnMut(ArchiveProgress),
 ) -> Result<Vec<ArchiveProgress>, String> {
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create directory: {}", e))?;
     }
     let file = File::create(dest).map_err(|e| format!("Failed to create archive: {}", e))?;
     compress_tar_with_writer(sources, Box::new(file), on_progress)
@@ -353,9 +372,7 @@ fn extract_tar_entries<R: Read>(
         let mut entry = entry.map_err(|e| e.to_string())?;
         let out_path = dest.join(entry.path().map_err(|e| e.to_string())?);
 
-        entry
-            .unpack(&out_path)
-            .map_err(|e| e.to_string())?;
+        entry.unpack(&out_path).map_err(|e| e.to_string())?;
 
         idx += 1;
         let p = ArchiveProgress {
